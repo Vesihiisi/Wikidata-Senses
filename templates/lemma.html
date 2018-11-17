@@ -3,10 +3,10 @@
 <div class="lemma_info">
 <ul class="lemma_info_top">
     <li><a href="https://tools.wmflabs.org/ordia/{{ word_id }}" target="_blank" >Ordia</a></li>
-    <li><a href="https://wikidata.org/wiki/Lexeme:{{ word_id }}" target="_blank" >Wikidata {{ word_id }}</a></li>
+    <li><a href="https://wikidata.org/wiki/Lexeme:{{ word_id }}" target="_blank" >Wikidata</a></li>
 </ul>
 <h1>{{ lemma }}</h1>
-<h2>{{ pos }}</h2>
+<h2>{{ lang }} · {{ pos }} · {{ word_id }}</h2>
 </div>
 <form method="post" id="sense_adder">
 <input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
