@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block main %}
+<h1>Wikidata Senses</h1>
+<p>
+  Here are the languages that have most Sense-less Lemmas:
+</p>
+<ul class="lang_list">
+  {% for key, value in languages.items() %}
+  <li><a href="{{ url_for('add', lang = value.code) }}">{{ key }} ({{ value.total }})</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}
