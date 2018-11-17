@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block main %}
+<div class="lemma_info">
+<a href="https://wikidata.org/wiki/Lexeme:{{ word_id }}" target="_blank" ><h1>{{ lemma }}</h1></a>
+<h2>{{ pos }}</h2>
+</div>
+<form method="post" id="sense_adder">
+  <input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+  <div class="form-group">
+    <label for="sense">Add the first Sense to this Lemma!</label>
+
+    <input {{ form_attributes('sense') }} class="form-control" autofocus="autofocus" autocomplete="off" required>
+    <p><input {{ form_attributes('word_id') }} type = "hidden" value = "{{ word_id }}" /></p>
+  </div>
+  <a href="{{ url_for('add', lang=lang) }}" class="btn btn-secondary">Give me another lemma</a>
+  <button type="submit" class="btn btn-primary float-right">Add</button>
+</form>
+
+{% endblock %}

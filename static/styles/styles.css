@@ -1,0 +1,47 @@
+.container {
+    max-width: 46rem;
+}
+
+.navbar {
+    background-color: #96281b;
+}
+
+.lemma_info {
+    text-align: center;
+}
+
+.lemma_info h1 {
+    font-size: 5rem;
+}
+
+.lemma_info a {
+    color: black;
+    text-decoration: none;
+}
+
+.lemma_info a:hover {
+    color: #96281b;
+}
+
+
+.lang_list li {
+    display: inline-block;
+    background-color: #ffeaa7;
+    margin: 2px;
+    font-size: 110%;
+}
+
+.lang_list li:hover {
+    background-color: #fdcb6e;
+}
+
+.lang_list li a {
+    display: block;
+    padding: 5px 10px;
+    color: black;
+}
+
+.lang_list li a:hover {
+    text-decoration: none;
+    color:black;
+}
