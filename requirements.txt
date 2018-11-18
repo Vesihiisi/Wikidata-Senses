@@ -1,7 +1,8 @@
-flask
-mwapi
-mwoauth
-pyyaml
-requests
-requests_oauthlib
-toolforge
+Flask==0.12.2
+mwoauth==0.3.2
+requests_oauthlib==0.8.0
+requests==2.18.1
+toolforge==4.1.0
+mwapi==0.5.1
+SPARQLWrapper==1.8.2
+PyYAML==3.13
