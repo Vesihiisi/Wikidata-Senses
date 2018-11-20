@@ -189,7 +189,7 @@ def get_with_missing_senses(lang):
         SELECT ?l ?lemma ?posLabel WHERE {
            ?l a ontolex:LexicalEntry ; dct:language ?language ;
                 wikibase:lemma ?lemma .
-          ?language wdt:P218 '%s'.
+          ?language wdt:P424 '%s'.
               OPTIONAL {
           ?l wikibase:lexicalCategory ?pos .
                 SERVICE wikibase:label
