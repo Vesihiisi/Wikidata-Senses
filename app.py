@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import collections
 import flask
 import mwapi
 import mwoauth
@@ -96,7 +97,7 @@ def authentication_area():
 
 
 def get_all_languages():
-    langs = {}
+    langs = collections.OrderedDict()
     sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
     sparql.setQuery("""SELECT ?number_of_lexemes ?language ?languageLabel ?languageCode
     WITH {SELECT ?language (COUNT(?l) AS ?number_of_lexemes) WHERE {
