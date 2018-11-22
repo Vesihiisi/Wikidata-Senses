@@ -14,7 +14,7 @@
 <div class="form-group">
 <label for="sense">Add the first Sense to this Lemma!</label>
 
-<input {{ form_attributes('sense') }} class="form-control" autofocus="autofocus" autocomplete="off" required>
+<input {{ form_attributes('sense') }} class="form-control" autofocus="autofocus" autocomplete="off" required lang="{{ lang }}">
 <p><input {{ form_attributes('word_id') }} type = "hidden" value = "{{ word_id }}" /></p>
 </div>
 <a href="{{ url_for('add', lang=lang) }}" class="btn btn-secondary">Give me another lemma</a>
