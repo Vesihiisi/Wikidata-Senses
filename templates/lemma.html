@@ -10,6 +10,7 @@
 </div>
 <form method="post" id="sense_adder">
 <input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+<input name="lang" type="hidden" value="{{ lang }}">
 <div class="form-group">
 <label for="sense">Add the first Sense to this Lemma!</label>
 

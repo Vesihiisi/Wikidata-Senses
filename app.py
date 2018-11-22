@@ -222,6 +222,7 @@ def add(lang):
 
         if 'oauth' in app.config:
             form_data = flask.request.form
+            lang = form_data['lang']
             senses = build_senses(form_data, lang)
             word_id = form_data["word_id"]
             return submit_lexeme(word_id, senses, lang)
