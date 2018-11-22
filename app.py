@@ -204,6 +204,35 @@ def get_with_missing_senses(lang):
     return results["results"]["bindings"]
 
 
+def get_with_missing_senses_by_user(user_name):
+    sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+    sparql.setQuery("""
+        SELECT ?lexeme ?languageCode ?lexicalCategoryLabel (GROUP_CONCAT(DISTINCT ?lemma; separator = "/") AS ?lemmas) WHERE {
+          hint:Query hint:optimizer "None".
+          SERVICE wikibase:mwapi {
+            bd:serviceParam wikibase:endpoint "www.wikidata.org";
+                            wikibase:api "Generator";
+                            mwapi:generator "allrevisions";
+                            mwapi:garvuser "%s";
+                            mwapi:garvnamespace "146";
+                            mwapi:garvend "2018-05-23T00:00:00.000Z";
+                            mwapi:garvlimit "max".
+            ?title wikibase:apiOutput mwapi:title.
+          }
+          BIND(URI(CONCAT(STR(wd:), STRAFTER(?title, "Lexeme:"))) AS ?lexeme)
+          MINUS { ?lexeme ontolex:sense ?sense. }
+          ?lexeme wikibase:lemma ?lemma;
+                  dct:language/wdt:P424 ?languageCode;
+                  wikibase:lexicalCategory ?lexicalCategory.
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        }
+        GROUP BY ?lexeme ?languageCode ?lexicalCategoryLabel
+        """ % user_name.replace(' ', '_').replace('\\', '\\\\').replace('"', r'\"'))
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    return results["results"]["bindings"]
+
+
 def submit_sense_from_request():
     token = flask.session.pop('csrf_token', None)
     if not token or token != flask.request.form.get('csrf_token'):
@@ -245,6 +274,22 @@ def add(lang):
                            lang=lang,
                            word_id=random_word_id,
                            pos=random_word["posLabel"]["value"])
+
+
+@app.route('/user/<user_name>', methods=['GET', 'POST'])
+def user(user_name):
+    if flask.request.method == 'POST':
+        response = submit_sense_from_request()
+        if response:
+            return response
+
+    words = get_with_missing_senses_by_user(user_name)
+    random_word = random.choice(words)
+    random_word_id = random_word["lexeme"]["value"].split("/")[-1]
+    return show_lemma_page(lemma=random_word["lemmas"]["value"],
+                           lang=random_word["languageCode"]["value"],
+                           word_id=random_word_id,
+                           pos=random_word["lexicalCategoryLabel"]["value"])
 
 
 @app.route('/login')
