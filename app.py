@@ -181,7 +181,6 @@ def submit_lexeme(word_id, senses, lang):
         token=token,
         id=word_id
     )
-    return flask.redirect(flask.url_for('add', lang=lang))
 
 
 def get_with_missing_senses(lang):
@@ -205,38 +204,47 @@ def get_with_missing_senses(lang):
     return results["results"]["bindings"]
 
 
+def submit_sense_from_request():
+    token = flask.session.pop('csrf_token', None)
+    if not token or token != flask.request.form.get('csrf_token'):
+        flask.g.csrf_error = True
+        flask.g.repeat_form = True
+        return None
+
+    if 'oauth' in app.config:
+        form_data = flask.request.form
+        lang = form_data['lang']
+        senses = build_senses(form_data, lang)
+        word_id = form_data["word_id"]
+        submit_lexeme(word_id, senses, lang)
+        return None
+    else:
+        return flask.jsonify(senses)
+
+
+def show_lemma_page(lemma, lang, word_id, pos):
+    return flask.render_template('lemma.html',
+                                 lemma=lemma,
+                                 lang=lang,
+                                 word_id=word_id,
+                                 pos=pos,
+                                 csrf_error=flask.g.get('csrf_error', False))
+
+
 @app.route('/add/<lang>', methods=['GET', 'POST'])
 def add(lang):
+    if flask.request.method == 'POST':
+        response = submit_sense_from_request()
+        if response:
+            return response
+
     words = get_with_missing_senses(lang)
     random_word = random.choice(words)
     random_word_id = random_word["l"]["value"].split("/")[-1]
-    csrf_error = False
-    if flask.request.method == 'POST':
-        token = flask.session.pop('csrf_token', None)
-        if token and token == flask.request.form.get('csrf_token'):
-            flask.session['sense'] = flask.request.form.get(
-                'sense', 'sense missing')
-        else:
-            csrf_error = True
-            flask.g.repeat_form = True
-
-        if 'oauth' in app.config:
-            form_data = flask.request.form
-            lang = form_data['lang']
-            senses = build_senses(form_data, lang)
-            word_id = form_data["word_id"]
-            return submit_lexeme(word_id, senses, lang)
-        else:
-            return flask.Response(json.dumps(senses),
-                                  mimetype='application/json')
-
-    return flask.render_template('lemma.html',
-                                 lemma=random_word["lemma"]["value"],
-                                 lang=lang,
-                                 total=len(words),
-                                 word_id=random_word_id,
-                                 pos=random_word["posLabel"]["value"],
-                                 csrf_error=csrf_error)
+    return show_lemma_page(lemma=random_word["lemma"]["value"],
+                           lang=lang,
+                           word_id=random_word_id,
+                           pos=random_word["posLabel"]["value"])
 
 
 @app.route('/login')
