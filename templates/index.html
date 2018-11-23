@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block main %}
 <h1>Wikidata Senses</h1>
+{% if logged_in_user_name() %}
+<p>
+  <a href="{{ url_for('user', user_name=logged_in_user_name().replace(' ', '_')) }}">
+    Lexemes created by you which don’t have any senses yet
+  </a>
+</p>
+{% endif %}
 <p>
   Here are the languages that have most Sense-less Lemmas:
 </p>
