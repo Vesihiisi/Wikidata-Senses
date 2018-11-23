@@ -77,22 +77,36 @@ def user_link(user_name):
 
 
 @app.template_global()
-def authentication_area():
-    if 'oauth' not in app.config:
-        return flask.Markup()
+def logged_in_user_name():
+    if 'user_name' in flask.g:
+        return flask.g.user_name
 
+    if 'oauth' not in app.config:
+        return flask.g.setdefault('user_name', None)
     if 'oauth_access_token' not in flask.session:
-        return (flask.Markup(r'<a id="login" class="navbar-text" href="') +
-                flask.Markup.escape(flask.url_for('login')) +
-                flask.Markup(r'">Log in</a>'))
+        return flask.g.setdefault('user_name', None)
 
     access_token = mwoauth.AccessToken(**flask.session['oauth_access_token'])
     identity = mwoauth.identify('https://www.wikidata.org/w/index.php',
                                 consumer_token,
                                 access_token)
+    return flask.g.setdefault('user_name', identity['username'])
+
+
+@app.template_global()
+def authentication_area():
+    if 'oauth' not in app.config:
+        return flask.Markup()
+
+    user_name = logged_in_user_name()
+
+    if user_name is None:
+        return (flask.Markup(r'<a id="login" class="navbar-text" href="') +
+                flask.Markup.escape(flask.url_for('login')) +
+                flask.Markup(r'">Log in</a>'))
 
     return (flask.Markup(r'<span class="navbar-text">Logged in as ') +
-            user_link(identity['username']) +
+            user_link(user_name) +
             flask.Markup(r'</span>'))
 
 
