@@ -280,6 +280,8 @@ def add(lang):
         response = submit_sense_from_request()
         if response:
             return response
+        else:
+            return flask.redirect(flask.url_for('add', lang=lang))
 
     words = get_with_missing_senses(lang)
     random_word = random.choice(words)
@@ -296,6 +298,8 @@ def user(user_name):
         response = submit_sense_from_request()
         if response:
             return response
+        else:
+            return flask.redirect(flask.url_for('user', user_name=user_name))
 
     words = get_with_missing_senses_by_user(user_name)
     random_word = random.choice(words)
