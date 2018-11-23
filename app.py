@@ -158,13 +158,20 @@ def build_senses(form_data, lang):
     return sense_data
 
 
-def current_url():
-    return flask.url_for(
-        flask.request.endpoint,
-        _external=True,
-        _scheme=flask.request.headers.get('X-Forwarded-Proto', 'http'),
-        **flask.request.view_args
-    )
+@app.template_global()
+def current_url(external=True):
+    if external:
+        return flask.url_for(
+            flask.request.endpoint,
+            _external=True,
+            _scheme=flask.request.headers.get('X-Forwarded-Proto', 'http'),
+            **flask.request.view_args
+        )
+    else:
+        return flask.url_for(
+            flask.request.endpoint,
+            **flask.request.view_args
+        )
 
 
 def generate_auth():

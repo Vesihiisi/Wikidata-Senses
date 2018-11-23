@@ -17,7 +17,7 @@
 <input {{ form_attributes('sense') }} class="form-control" autofocus="autofocus" autocomplete="off" required lang="{{ lang }}">
 <p><input {{ form_attributes('word_id') }} type = "hidden" value = "{{ word_id }}" /></p>
 </div>
-<a href="{{ url_for('add', lang=lang) }}" class="btn btn-secondary">Give me another lemma</a>
+<a href="{{ current_url(external=False) }}" class="btn btn-secondary">Give me another lemma</a>
 <button type="submit" class="btn btn-primary float-right">Add</button>
 </form>
 
