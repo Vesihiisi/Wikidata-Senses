@@ -158,20 +158,28 @@ def build_senses(form_data, lang):
     return sense_data
 
 
-@app.template_global()
-def current_url(external=True):
-    if external:
+def full_url(endpoint, _external=True, **kwargs):
+    if _external:
         return flask.url_for(
-            flask.request.endpoint,
+            endpoint,
             _external=True,
             _scheme=flask.request.headers.get('X-Forwarded-Proto', 'http'),
-            **flask.request.view_args
+            **kwargs
         )
     else:
         return flask.url_for(
-            flask.request.endpoint,
-            **flask.request.view_args
+            endpoint,
+            **kwargs
         )
+
+
+@app.template_global()
+def current_url(external=True):
+    return full_url(
+        flask.request.endpoint,
+        _external=external,
+        **flask.request.view_args
+    )
 
 
 def generate_auth():
@@ -256,7 +264,9 @@ def get_with_missing_senses_by_user(user_name):
 
 def submit_sense_from_request():
     token = flask.session.pop('csrf_token', None)
-    if not token or token != flask.request.form.get('csrf_token'):
+    if (not token or
+        token != flask.request.form.get('csrf_token') or
+        not flask.request.referrer.startswith(full_url('index'))):
         flask.g.csrf_error = True
         flask.g.repeat_form = True
         return None
