@@ -264,7 +264,9 @@ def get_with_missing_senses_by_user(user_name):
 
 def submit_sense_from_request():
     token = flask.session.pop('csrf_token', None)
-    if not token or token != flask.request.form.get('csrf_token'):
+    if (not token or
+        token != flask.request.form.get('csrf_token') or
+        not flask.request.referrer.startswith(full_url('index'))):
         flask.g.csrf_error = True
         flask.g.repeat_form = True
         return None
