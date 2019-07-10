@@ -14,13 +14,13 @@ import toolforge
 import yaml
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
 app = flask.Flask(__name__)
 
 app.before_request(toolforge.redirect_to_https)
 
 toolforge.set_user_agent('wikidata-senses', email='alicia@fagerving.se')
 user_agent = requests.utils.default_user_agent()
+sparql = SPARQLWrapper("https://query.wikidata.org/sparql", agent=user_agent)
 
 __dir__ = os.path.dirname(__file__)
 try:
