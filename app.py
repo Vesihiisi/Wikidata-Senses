@@ -21,6 +21,7 @@ app.before_request(toolforge.redirect_to_https)
 toolforge.set_user_agent('wikidata-senses', email='alicia@fagerving.se')
 user_agent = requests.utils.default_user_agent()
 sparql = SPARQLWrapper("https://query.wikidata.org/sparql", agent=user_agent)
+sparql.setReturnFormat(JSON)
 
 __dir__ = os.path.dirname(__file__)
 try:
@@ -148,7 +149,6 @@ def authentication_area():
 
 def get_all_languages():
     langs = collections.OrderedDict()
-    sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
     sparql.setQuery("""SELECT ?number_of_lexemes ?language ?languageLabel ?languageCode
     WITH {SELECT ?language (COUNT(?l) AS ?number_of_lexemes) WHERE {
     ?l a ontolex:LexicalEntry ;
@@ -165,7 +165,6 @@ def get_all_languages():
     ORDER BY DESC(?number_of_lexemes)
     LIMIT 50
       """)
-    sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
     for el in results["results"]["bindings"]:
         sense_dict = {"total": el["number_of_lexemes"]["value"],
@@ -249,7 +248,6 @@ def submit_lexeme(word_id, senses, lang):
 
 
 def get_with_missing_senses(lang):
-    sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
     sparql.setQuery("""#Lemmas with no senses
         SELECT ?l ?lemma ?posLabel WHERE {
            ?l a ontolex:LexicalEntry ; dct:language ?language ;
@@ -264,13 +262,11 @@ def get_with_missing_senses(lang):
         }
 
         ORDER BY ?lemma""" % lang)
-    sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
     return results["results"]["bindings"]
 
 
 def get_with_missing_senses_by_user(user_name):
-    sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
     sparql.setQuery("""
         SELECT ?lexeme ?languageCode ?lexicalCategoryLabel (GROUP_CONCAT(DISTINCT ?lemma; separator = "/") AS ?lemmas) WHERE {
           hint:Query hint:optimizer "None".
@@ -293,7 +289,6 @@ def get_with_missing_senses_by_user(user_name):
         }
         GROUP BY ?lexeme ?languageCode ?lexicalCategoryLabel
         """ % user_name.replace(' ', '_').replace('\\', '\\\\').replace('"', r'\"'))
-    sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
     return results["results"]["bindings"]
 
